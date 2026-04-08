@@ -54,6 +54,8 @@ The CLI currently supports the `q35-ovmf-static-acpi` profile for `x86_64/q35`
 with the static DSDT template in this repository. It validates CPU topology and
 rejects ACPI-affecting features such as `spcr`, `hmat`, `tpm`, `cxl`, custom
 `acpi.tables`, and similar options that would require a different table set.
+For this profile, changing `memory.size` alone does not change the generated
+ACPI blob.
 
 A ready-to-edit template is available at [examples/qemu-acpi-template.toml](/home/maliang/acpi_tables/examples/qemu-acpi-template.toml).
 

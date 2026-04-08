@@ -26,6 +26,8 @@ cores = 4
 threads = 1
 
 [memory]
+# Parsed for completeness, but does not currently affect the generated
+# TDX/q35 static ACPI blob.
 size = "4G"
 backend = ""
 memory_encryption = ""

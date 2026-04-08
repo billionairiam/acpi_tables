@@ -13,6 +13,8 @@ struct Config {
     platform: Platform,
     cpu: Cpu,
     #[serde(default)]
+    memory: Memory,
+    #[serde(default)]
     machine: Machine,
     #[serde(default)]
     acpi: Acpi,
@@ -42,6 +44,18 @@ struct Cpu {
 struct CpuTopology {
     cpus: u8,
     maxcpus: u8,
+}
+
+#[derive(Debug, Default, Deserialize)]
+struct Memory {
+    #[serde(default)]
+    size: String,
+    #[serde(default)]
+    backend: String,
+    #[serde(default)]
+    memory_encryption: String,
+    #[serde(default)]
+    aux_ram_share: bool,
 }
 
 #[derive(Debug, Default, Deserialize)]
@@ -230,6 +244,16 @@ fn validate_config(config: &Config) -> Result<QemuQ35AcpiProfile, CliError> {
         )));
     }
 
+    // Memory settings are intentionally parsed but ignored for the current
+    // TDX/q35 static ACPI profile. Changing RAM size alone does not affect the
+    // generated ACPI blob unless future NUMA/HMAT/NVDIMM-like features are added.
+    let _ = (
+        &config.memory.size,
+        &config.memory.backend,
+        &config.memory.memory_encryption,
+        config.memory.aux_ram_share,
+    );
+
     for netdev in &config.netdevs {
         let _ = (&netdev.id, &netdev.kind);
     }
@@ -292,6 +316,29 @@ cpus = 4
 maxcpus = 4
 "#;
 
+    const SAMPLE_CONFIG_WITH_MEMORY: &str = r#"
+[meta]
+schema_version = 1
+profile = "q35-ovmf-static-acpi"
+
+[platform]
+arch = "x86_64"
+machine = "q35"
+
+[cpu]
+model = "host"
+
+[cpu.topology]
+cpus = 4
+maxcpus = 4
+
+[memory]
+size = "2G"
+backend = ""
+memory_encryption = ""
+aux_ram_share = false
+"#;
+
     #[test]
     fn test_parse_args() {
         let args = vec![
@@ -309,6 +356,20 @@ maxcpus = 4
     fn test_validate_config() {
         let config: Config = toml::from_str(SAMPLE_CONFIG).unwrap();
         let profile = validate_config(&config).unwrap();
+        assert_eq!(
+            profile,
+            QemuQ35AcpiProfile {
+                cpu_count: 4,
+                max_cpu_count: 4,
+            }
+        );
+    }
+
+    #[test]
+    fn test_memory_is_parsed_but_ignored() {
+        let config: Config = toml::from_str(SAMPLE_CONFIG_WITH_MEMORY).unwrap();
+        let profile = validate_config(&config).unwrap();
+        assert_eq!(config.memory.size, "2G");
         assert_eq!(
             profile,
             QemuQ35AcpiProfile {
