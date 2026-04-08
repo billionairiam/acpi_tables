@@ -38,6 +38,25 @@ MCFG, etc) as well as generate AML for filling a DSDT table.
 The crate is currently used by the Cloud Hypervisor project so detailed
 examples of populating different ACPI table types can be found there.
 
+To reproduce the QEMU `q35` ACPI blob produced by `etc/acpi/tables`, run:
+
+```shell
+cargo run --example qemu_q35 -- /absolute/path/to/acpi.table
+```
+
+To generate a static `q35` ACPI blob from a TOML QEMU profile, run:
+
+```shell
+cargo run --features cli --bin qemu-acpi -- examples/qemu-acpi-template.toml -o acpi.table
+```
+
+The CLI currently supports the `q35-ovmf-static-acpi` profile for `x86_64/q35`
+with the static DSDT template in this repository. It validates CPU topology and
+rejects ACPI-affecting features such as `spcr`, `hmat`, `tpm`, `cxl`, custom
+`acpi.tables`, and similar options that would require a different table set.
+
+A ready-to-edit template is available at [examples/qemu-acpi-template.toml](/home/maliang/acpi_tables/examples/qemu-acpi-template.toml).
+
 
 ## Licence
 

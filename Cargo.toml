@@ -9,5 +9,16 @@ keywords = ["virt"]
 license = "Apache-2.0"
 edition = "2021"
 
+[features]
+default = []
+cli = ["dep:serde", "dep:toml"]
+
 [dependencies]
 zerocopy = { version = "0.8.23", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"], optional = true }
+toml = { version = "0.8", optional = true }
+
+[[bin]]
+name = "qemu-acpi"
+path = "src/bin/qemu-acpi.rs"
+required-features = ["cli"]

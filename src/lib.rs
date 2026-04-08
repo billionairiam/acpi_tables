@@ -20,6 +20,7 @@ pub mod hmat;
 pub mod madt;
 pub mod mcfg;
 pub mod pptt;
+pub mod qemu;
 pub mod rhct;
 pub mod rimt;
 pub mod rqsc;

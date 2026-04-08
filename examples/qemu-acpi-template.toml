@@ -1,0 +1,79 @@
+[meta]
+schema_version = 1
+profile = "q35-ovmf-static-acpi"
+
+[qemu]
+binary = "/usr/bin/qemu-system-x86_64"
+version = "8.2.2+tdx1.1"
+
+[platform]
+arch = "x86_64"
+machine = "q35"
+bios = "/usr/share/ovmf/OVMF.fd"
+accel = "kvm"
+nodefaults = true
+
+[cpu]
+model = "host"
+
+[cpu.topology]
+cpus = 4
+maxcpus = 4
+sockets = 1
+dies = 1
+clusters = 1
+cores = 4
+threads = 1
+
+[memory]
+size = "4G"
+backend = ""
+memory_encryption = ""
+aux_ram_share = false
+
+[machine.properties]
+kernel_irqchip = "split"
+hpet = false
+smm = false
+pic = false
+spcr = false
+nvdimm = false
+hmat = false
+
+[machine.features]
+confidential_guest = false
+cxl = false
+sgx_epc = false
+tpm = false
+viommu = false
+
+[defaults]
+serial = false
+parallel = false
+monitor = false
+vga = false
+floppy = false
+cdrom = false
+
+[[netdevs]]
+id = "net0"
+type = "user"
+
+[[devices]]
+driver = "virtio-net-pci"
+id = "net0dev"
+bus = "pcie.0"
+addr = "0x02"
+multifunction = false
+romfile = ""
+netdev = "net0"
+mac = "52:54:00:12:34:56"
+
+[acpi]
+tables = []
+
+# Future override example:
+# [[acpi.tables]]
+# kind = "file"
+# signature = "DSDT"
+# source = "templates/dsdt_q35_ovmf_base.bin"
